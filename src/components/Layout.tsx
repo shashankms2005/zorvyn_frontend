@@ -18,17 +18,12 @@ const Layout = () => {
       {/* Sidebar */}
       <aside className="w-64 bg-base-900 border-r border-surface-border flex flex-col justify-between hidden md:flex">
         <div>
-          <div className="p-6 flex items-center space-x-3">
-            <div className="w-10 h-10 flex items-center justify-center shrink-0">
-              <img 
-                src="https://companyasset.blob.core.windows.net/assets/zorvynlogolight.png" 
-                alt="Zorvyn Logo" 
-                className="w-full h-full object-contain"
-              />
-            </div>
-            <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary-400 to-accent-500">
-              Zorvyn
-            </span>
+          <div className="p-6">
+            <img 
+              src="https://companyasset.blob.core.windows.net/assets/zorvynfulllogolight.png" 
+              alt="Zorvyn Logo" 
+              className="h-10 w-auto object-contain"
+            />
           </div>
           
           <nav className="mt-6 px-4 space-y-2">
@@ -85,13 +80,12 @@ const Layout = () => {
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Mobile Header */}
         <header className="md:hidden bg-base-900 border-b border-surface-border p-4 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center">
             <img 
-              src="https://companyasset.blob.core.windows.net/assets/zorvynlogolight.png" 
+              src="https://companyasset.blob.core.windows.net/assets/zorvynfulllogolight.png" 
               alt="Zorvyn Logo" 
-              className="w-8 h-8 object-contain"
+              className="h-8 w-auto object-contain"
             />
-            <span className="text-lg font-bold text-gray-200">Zorvyn</span>
           </div>
           <button onClick={logout} className="text-gray-400 hover:text-red-400">
             <LogOut size={20} />
