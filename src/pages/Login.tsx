@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../auth/AuthContext';
-import { Wallet, AlertCircle, Loader2 } from 'lucide-react';
+import { AlertCircle, Loader2 } from 'lucide-react';
 
 const Login = () => {
   const [email, setEmail] = useState('rahul.admin@Finance.zorvyn.com');
@@ -43,8 +43,12 @@ const Login = () => {
       <div className="w-full max-w-md animate-fade-in animate-slide-up z-10">
         <div className="glass-card p-8">
           <div className="flex flex-col items-center mb-8">
-            <div className="w-16 h-16 rounded-2xl bg-primary-600/10 flex items-center justify-center mb-4 border border-primary-500/20">
-              <Wallet size={32} className="text-primary-500" />
+            <div className="w-24 h-24 flex items-center justify-center mb-2">
+              <img 
+                src="https://companyasset.blob.core.windows.net/assets/zorvynlogolight.png" 
+                alt="Zorvyn Logo" 
+                className="w-full h-full object-contain"
+              />
             </div>
             <h1 className="text-3xl font-bold mb-2">Welcome Back</h1>
             <p className="text-gray-400 text-center">Sign in to your financial dashboard to continue</p>

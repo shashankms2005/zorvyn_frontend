@@ -1,6 +1,6 @@
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
-import { LayoutDashboard, Receipt, LogOut, Wallet, User as UserIcon } from 'lucide-react';
+import { LayoutDashboard, Receipt, LogOut, User as UserIcon } from 'lucide-react';
 
 const Layout = () => {
   const { user, logout, hasRole } = useAuth();
@@ -19,8 +19,12 @@ const Layout = () => {
       <aside className="w-64 bg-base-900 border-r border-surface-border flex flex-col justify-between hidden md:flex">
         <div>
           <div className="p-6 flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-primary-600/20 flex items-center justify-center text-primary-500">
-              <Wallet size={24} />
+            <div className="w-10 h-10 flex items-center justify-center shrink-0">
+              <img 
+                src="https://companyasset.blob.core.windows.net/assets/zorvynlogolight.png" 
+                alt="Zorvyn Logo" 
+                className="w-full h-full object-contain"
+              />
             </div>
             <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary-400 to-accent-500">
               Zorvyn
@@ -82,7 +86,11 @@ const Layout = () => {
         {/* Mobile Header */}
         <header className="md:hidden bg-base-900 border-b border-surface-border p-4 flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <Wallet size={20} className="text-primary-500" />
+            <img 
+              src="https://companyasset.blob.core.windows.net/assets/zorvynlogolight.png" 
+              alt="Zorvyn Logo" 
+              className="w-8 h-8 object-contain"
+            />
             <span className="text-lg font-bold text-gray-200">Zorvyn</span>
           </div>
           <button onClick={logout} className="text-gray-400 hover:text-red-400">
