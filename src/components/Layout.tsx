@@ -1,0 +1,118 @@
+import React from 'react';
+import { Outlet, Link, useLocation } from 'react-router-dom';
+import { useAuth } from '../auth/AuthContext';
+import { LayoutDashboard, Receipt, LogOut, Wallet, User as UserIcon } from 'lucide-react';
+
+const Layout = () => {
+  const { user, logout, hasRole } = useAuth();
+  const location = useLocation();
+
+  const navItems = [
+    { name: 'Dashboard', path: '/', icon: LayoutDashboard, roles: ['ADMIN', 'ANALYST', 'VIEWER'] },
+    { name: 'Records', path: '/records', icon: Receipt, roles: ['ADMIN', 'ANALYST'] },
+  ];
+
+  const filteredNavItems = navItems.filter(item => hasRole(item.roles));
+
+  return (
+    <div className="flex h-screen bg-base-950 text-gray-200 font-sans">
+      {/* Sidebar */}
+      <aside className="w-64 bg-base-900 border-r border-surface-border flex flex-col justify-between hidden md:flex">
+        <div>
+          <div className="p-6 flex items-center space-x-3">
+            <div className="w-10 h-10 rounded-xl bg-primary-600/20 flex items-center justify-center text-primary-500">
+              <Wallet size={24} />
+            </div>
+            <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary-400 to-accent-500">
+              Zorvyn
+            </span>
+          </div>
+          
+          <nav className="mt-6 px-4 space-y-2">
+            {filteredNavItems.map((item) => {
+              const isActive = location.pathname === item.path;
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.name}
+                  to={item.path}
+                  className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 ${
+                    isActive 
+                      ? 'bg-primary-600/10 text-primary-500 font-medium' 
+                      : 'text-gray-400 hover:bg-surface-hover hover:text-gray-200'
+                  }`}
+                >
+                  <Icon size={20} className={isActive ? 'text-primary-500' : 'text-gray-500'} />
+                  <span>{item.name}</span>
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
+
+        <div className="flex flex-col border-t border-surface-border">
+          {/* User Identity Info */}
+          <div className="p-4 flex items-center space-x-3">
+            <div className="w-10 h-10 rounded-full bg-base-800 border border-surface-border flex items-center justify-center">
+              <UserIcon size={18} className="text-gray-400" />
+            </div>
+            <div className="flex-1 overflow-hidden">
+              <p className="text-sm font-semibold truncate text-gray-200">{user?.name}</p>
+              <div className="flex items-center space-x-1.5">
+                <span className={`w-2 h-2 rounded-full ${
+                  user?.role === 'ADMIN' ? 'bg-red-500' : 
+                  user?.role === 'ANALYST' ? 'bg-yellow-500' : 'bg-blue-500'
+                }`} />
+                <p className="text-[10px] uppercase tracking-wider font-bold text-gray-500">{user?.role}</p>
+              </div>
+            </div>
+          </div>
+
+          <button
+            onClick={logout}
+            className="flex items-center space-x-3 px-8 py-4 text-gray-400 hover:bg-red-500/10 hover:text-red-400 transition-all duration-200"
+          >
+            <LogOut size={20} />
+            <span>Logout</span>
+          </button>
+        </div>
+      </aside>
+
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Mobile Header */}
+        <header className="md:hidden bg-base-900 border-b border-surface-border p-4 flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <Wallet size={20} className="text-primary-500" />
+            <span className="text-lg font-bold text-gray-200">Zorvyn</span>
+          </div>
+          <button onClick={logout} className="text-gray-400 hover:text-red-400">
+            <LogOut size={20} />
+          </button>
+        </header>
+
+        {/* Topbar for Desktop */}
+        <header className="hidden md:flex h-20 items-center justify-between px-8 border-b border-surface-border bg-base-950/80 backdrop-blur-md">
+           <h1 className="text-xl font-semibold capitalize">
+             {location.pathname === '/' ? 'Dashboard Overview' : location.pathname.substring(1)}
+           </h1>
+           <div className="flex items-center space-x-4">
+             <div className="flex flex-col items-end">
+               <span className="text-sm font-medium text-gray-300">{user?.email}</span>
+               <span className="text-[10px] text-gray-500 uppercase">{user?.role} Access</span>
+             </div>
+           </div>
+        </header>
+
+        {/* Page Content */}
+        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-base-950 p-6 md:p-8 custom-scrollbar">
+          <div className="animate-fade-in animate-slide-up max-w-7xl mx-auto">
+             <Outlet />
+          </div>
+        </main>
+      </div>
+    </div>
+  );
+};
+
+export default Layout;
