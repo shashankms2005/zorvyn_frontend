@@ -1,4 +1,3 @@
-import React from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import { LayoutDashboard, Receipt, LogOut, Wallet, User as UserIcon } from 'lucide-react';
