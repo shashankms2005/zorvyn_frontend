@@ -18,7 +18,7 @@ const Login = () => {
     setError('');
 
     try {
-      const response = await axios.post('http://localhost:3000/api/auth/login', {
+      const response = await axios.post('https://zorvyn-backend-0n6d.onrender.com/api/auth/login', {
         email,
         password,
       });
