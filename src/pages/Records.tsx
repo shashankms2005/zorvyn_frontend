@@ -357,7 +357,7 @@ const Records = () => {
                     </td>
                     {isAdmin && (
                       <td className="px-6 py-4 text-right">
-                        <div className="flex items-center justify-end space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="flex items-center justify-end space-x-1">
                           <button
                             onClick={() => {
                               setEditingRecord(record);
