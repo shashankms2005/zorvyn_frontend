@@ -55,13 +55,27 @@ const Records = () => {
   const [typeFilter, setTypeFilter] = useState<'ALL' | 'INCOME' | 'EXPENSE'>('ALL');
   const [page, setPage] = useState(1);
 
+  // Server-side Filter State
+  const [categoryFilter, setCategoryFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('ALL');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+
   // Modal State
   const [modalOpen, setModalOpen] = useState(false);
   const [editingRecord, setEditingRecord] = useState<FinancialRecord | null>(null);
 
   const fetchRecords = async () => {
+    setIsLoading(true);
     try {
-      const response = await api.get('/records');
+      const params: any = {};
+      if (typeFilter !== 'ALL') params.type = typeFilter;
+      if (categoryFilter.trim()) params.category = categoryFilter;
+      if (statusFilter !== 'ALL') params.status = statusFilter;
+      if (startDate) params.startDate = new Date(startDate).toISOString();
+      if (endDate) params.endDate = new Date(endDate).toISOString();
+
+      const response = await api.get('/records', { params });
       const data = response.data?.data ?? [];
       setRecords(data);
       setFiltered(data);
@@ -75,25 +89,30 @@ const Records = () => {
 
   useEffect(() => {
     fetchRecords();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [typeFilter, statusFilter, startDate, endDate]);
+
+  // Debounced category search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (categoryFilter !== undefined) fetchRecords();
+    }, 500);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [categoryFilter]);
 
   useEffect(() => {
     let result = records;
-    if (typeFilter !== 'ALL') {
-      result = result.filter(r => r.type === typeFilter);
-    }
     if (search.trim()) {
       const q = search.toLowerCase();
       result = result.filter(r =>
         r.category?.toLowerCase().includes(q) ||
-        r.notes?.toLowerCase().includes(q) ||
-        (r.paymentMethod && r.paymentMethod.toLowerCase().includes(q)) ||
-        (r.status && r.status.toLowerCase().includes(q))
+        r.notes?.toLowerCase().includes(q)
       );
     }
     setFiltered(result);
     setPage(1);
-  }, [search, typeFilter, records]);
+  }, [search, records]);
 
   const handleCreateOrUpdate = async (data: any) => {
     try {
@@ -188,6 +207,68 @@ const Records = () => {
             </button>
           )}
         </div>
+      </div>
+
+      {/* Advanced Filters Bar */}
+      <div className="glass-card p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
+        <div className="space-y-1.5">
+          <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest px-1">Category</label>
+          <input
+            type="text"
+            placeholder="Filter by category..."
+            value={categoryFilter}
+            onChange={e => setCategoryFilter(e.target.value)}
+            className="input-field !h-10 text-sm"
+          />
+        </div>
+
+        <div className="space-y-1.5">
+          <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest px-1">Status</label>
+          <select
+            value={statusFilter}
+            onChange={e => setStatusFilter(e.target.value)}
+            className="input-field !h-10 text-sm"
+          >
+            <option value="ALL">All Statuses</option>
+            <option value="COMPLETED">Completed</option>
+            <option value="PENDING">Pending</option>
+            <option value="FAILED">Failed</option>
+          </select>
+        </div>
+
+        <div className="space-y-1.5">
+          <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest px-1">From Date</label>
+          <input
+            type="date"
+            value={startDate}
+            onChange={e => setStartDate(e.target.value)}
+            className="input-field !h-10 text-sm"
+          />
+        </div>
+
+        <div className="space-y-1.5">
+          <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest px-1">To Date</label>
+          <input
+            type="date"
+            value={endDate}
+            onChange={e => setEndDate(e.target.value)}
+            className="input-field !h-10 text-sm"
+          />
+        </div>
+
+        <button
+          onClick={() => {
+            setTypeFilter('ALL');
+            setCategoryFilter('');
+            setStatusFilter('ALL');
+            setStartDate('');
+            setEndDate('');
+            setSearch('');
+          }}
+          className="h-10 px-4 rounded-xl border border-surface-border text-xs font-semibold text-gray-400 hover:bg-surface-hover hover:text-gray-200 transition-all"
+        >
+          Reset All Filters
+        </button>
       </div>
 
       {/* Table */}
