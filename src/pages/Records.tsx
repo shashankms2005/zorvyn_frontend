@@ -90,16 +90,7 @@ const Records = () => {
   useEffect(() => {
     fetchRecords();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [typeFilter, statusFilter, startDate, endDate]);
-
-  // Debounced category search
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (categoryFilter !== undefined) fetchRecords();
-    }, 500);
-    return () => clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [categoryFilter]);
+  }, [typeFilter, categoryFilter, statusFilter, startDate, endDate]);
 
   useEffect(() => {
     let result = records;
@@ -213,13 +204,25 @@ const Records = () => {
       <div className="glass-card p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
         <div className="space-y-1.5">
           <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest px-1">Category</label>
-          <input
-            type="text"
-            placeholder="Filter by category..."
+          <select
             value={categoryFilter}
             onChange={e => setCategoryFilter(e.target.value)}
             className="input-field !h-10 text-sm"
-          />
+          >
+            <option value="">All Categories</option>
+            <option value="Salary">Salary</option>
+            <option value="Freelance">Freelance</option>
+            <option value="Investment">Investment</option>
+            <option value="Rent">Rent</option>
+            <option value="Groceries">Groceries</option>
+            <option value="Food">Food</option>
+            <option value="Entertainment">Entertainment</option>
+            <option value="Utilities">Utilities</option>
+            <option value="Transport">Transport</option>
+            <option value="Shopping">Shopping</option>
+            <option value="Healthcare">Healthcare</option>
+            <option value="Other">Other</option>
+          </select>
         </div>
 
         <div className="space-y-1.5">
