@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import api from '../api/axios';
 import { useAuth } from '../auth/AuthContext';
 import { Loader2, TrendingUp, TrendingDown, Search, ChevronLeft, ChevronRight, CreditCard, Banknote, ArrowLeftRight, Plus, Pencil, Trash2, AlertCircle } from 'lucide-react';
+
 import RecordModal from '../components/RecordModal';
 
 interface FinancialRecord {
@@ -46,24 +48,46 @@ const ITEMS_PER_PAGE = 15;
 const Records = () => {
   const { user } = useAuth();
   const isAdmin = user?.role === 'ADMIN';
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const [records, setRecords] = useState<FinancialRecord[]>([]);
   const [filtered, setFiltered] = useState<FinancialRecord[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
-  const [search, setSearch] = useState('');
-  const [typeFilter, setTypeFilter] = useState<'ALL' | 'INCOME' | 'EXPENSE'>('ALL');
-  const [page, setPage] = useState(1);
 
-  // Server-side Filter State
-  const [categoryFilter, setCategoryFilter] = useState('');
-  const [statusFilter, setStatusFilter] = useState('ALL');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+  // All filters are stored in the URL — they survive page refresh and are shareable
+  const search = searchParams.get('search') ?? '';
+  const typeFilter = (searchParams.get('type') ?? 'ALL') as 'ALL' | 'INCOME' | 'EXPENSE';
+  const categoryFilter = searchParams.get('category') ?? '';
+  const statusFilter = searchParams.get('status') ?? 'ALL';
+  const startDate = searchParams.get('startDate') ?? '';
+  const endDate = searchParams.get('endDate') ?? '';
+  const page = parseInt(searchParams.get('page') ?? '1', 10);
+
+  const setParam = (key: string, value: string) => {
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      if (!value || value === 'ALL') next.delete(key);
+      else next.set(key, value);
+      next.delete('page');
+      return next;
+    });
+  };
+
+  const setPage = (p: number | ((prev: number) => number)) => {
+    const newPage = typeof p === 'function' ? p(page) : p;
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      if (newPage <= 1) next.delete('page');
+      else next.set('page', String(newPage));
+      return next;
+    });
+  };
 
   // Modal State
   const [modalOpen, setModalOpen] = useState(false);
   const [editingRecord, setEditingRecord] = useState<FinancialRecord | null>(null);
+
 
   const fetchRecords = async () => {
     setIsLoading(true);
@@ -164,7 +188,7 @@ const Records = () => {
               type="text"
               placeholder="Search data..."
               value={search}
-              onChange={e => setSearch(e.target.value)}
+              onChange={e => setParam('search', e.target.value)}
               className="input-field pl-9 !w-full sm:!w-64"
             />
           </div>
@@ -173,7 +197,7 @@ const Records = () => {
             {(['ALL', 'INCOME', 'EXPENSE'] as const).map(t => (
               <button
                 key={t}
-                onClick={() => setTypeFilter(t)}
+                onClick={() => setParam('type', t)}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                   typeFilter === t
                     ? 'bg-primary-600 text-white'
@@ -206,7 +230,7 @@ const Records = () => {
           <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest px-1">Category</label>
           <select
             value={categoryFilter}
-            onChange={e => setCategoryFilter(e.target.value)}
+            onChange={e => setParam('category', e.target.value)}
             className="input-field !h-10 text-sm"
           >
             <option value="">All Categories</option>
@@ -229,7 +253,7 @@ const Records = () => {
           <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest px-1">Status</label>
           <select
             value={statusFilter}
-            onChange={e => setStatusFilter(e.target.value)}
+            onChange={e => setParam('status', e.target.value)}
             className="input-field !h-10 text-sm"
           >
             <option value="ALL">All Statuses</option>
@@ -244,7 +268,7 @@ const Records = () => {
           <input
             type="date"
             value={startDate}
-            onChange={e => setStartDate(e.target.value)}
+            onChange={e => setParam('startDate', e.target.value)}
             className="input-field !h-10 text-sm"
           />
         </div>
@@ -254,19 +278,14 @@ const Records = () => {
           <input
             type="date"
             value={endDate}
-            onChange={e => setEndDate(e.target.value)}
+            onChange={e => setParam('endDate', e.target.value)}
             className="input-field !h-10 text-sm"
           />
         </div>
 
         <button
           onClick={() => {
-            setTypeFilter('ALL');
-            setCategoryFilter('');
-            setStatusFilter('ALL');
-            setStartDate('');
-            setEndDate('');
-            setSearch('');
+            setSearchParams({});
           }}
           className="h-10 px-4 rounded-xl border border-surface-border text-xs font-semibold text-gray-400 hover:bg-surface-hover hover:text-gray-200 transition-all"
         >
