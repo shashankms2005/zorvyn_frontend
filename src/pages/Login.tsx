@@ -103,6 +103,36 @@ const Login = () => {
             </button>
           </form>
         </div>
+
+        {/* Demo Credentials */}
+        <div className="mt-4 glass-card p-5 border-surface-border">
+          <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3 text-center">
+            🔑 Demo Accounts — Click to Auto-Fill
+          </p>
+          <div className="space-y-2">
+            {[
+              { role: 'ADMIN', name: 'Rahul', email: 'rahul.admin@Finance.zorvyn.com', color: 'border-red-500/30 hover:bg-red-500/5', badge: 'bg-red-500/10 text-red-400' },
+              { role: 'ANALYST', name: 'Priya', email: 'priya.analyst@Finance.zorvyn.com', color: 'border-yellow-500/30 hover:bg-yellow-500/5', badge: 'bg-yellow-500/10 text-yellow-400' },
+              { role: 'VIEWER', name: 'Amit', email: 'amit.viewer@Finance.zorvyn.com', color: 'border-blue-500/30 hover:bg-blue-500/5', badge: 'bg-blue-500/10 text-blue-400' },
+            ].map(u => (
+              <button
+                key={u.role}
+                type="button"
+                onClick={() => { setEmail(u.email); setPassword('password123'); }}
+                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl border transition-all duration-200 text-left ${u.color}`}
+              >
+                <div>
+                  <p className="text-sm font-semibold text-gray-200">{u.name}</p>
+                  <p className="text-[11px] text-gray-500 truncate">{u.email}</p>
+                </div>
+                <div className="flex flex-col items-end gap-1 shrink-0 ml-3">
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${u.badge}`}>{u.role}</span>
+                  <span className="text-[10px] text-gray-600 font-mono">password123</span>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
