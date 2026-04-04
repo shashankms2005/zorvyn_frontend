@@ -106,11 +106,31 @@ const Layout = () => {
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-base-950 p-6 md:p-8 custom-scrollbar">
+        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-base-950 p-6 pb-24 md:p-8 custom-scrollbar">
           <div className="animate-fade-in animate-slide-up max-w-7xl mx-auto">
              <Outlet />
           </div>
         </main>
+
+        {/* Mobile Bottom Navigation */}
+        <nav className="md:hidden fixed bottom-6 left-6 right-6 h-16 bg-base-900/80 backdrop-blur-xl border border-surface-border rounded-2xl flex items-center justify-around px-6 z-50 shadow-2xl">
+          {filteredNavItems.map((item) => {
+            const isActive = location.pathname === item.path;
+            const Icon = item.icon;
+            return (
+              <Link
+                key={item.name}
+                to={item.path}
+                className={`flex flex-col items-center justify-center space-y-1 transition-all duration-300 ${
+                  isActive ? 'text-primary-500 scale-110' : 'text-gray-500'
+                }`}
+              >
+                <Icon size={20} className={isActive ? 'animate-pulse-subtle' : ''} />
+                <span className="text-[10px] font-bold uppercase tracking-tighter">{item.name}</span>
+              </Link>
+            );
+          })}
+        </nav>
       </div>
     </div>
   );
